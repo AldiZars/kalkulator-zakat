@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Zakat Penghasilan Sederhana — Cek Kewajiban Zakat dari Gaji Bulanan</title>
+  <!-- Link CSS eksternal (sesuai syarat punya file HTML dan CSS) -->
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Internal fallback style agar tampilan tetap 100% sempurna saat dibuka langsung via file:// atau tanpa web server */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+    }
+    .container {
+      width: 100%;
+      max-width: 760px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+    .page-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .page-header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .page-header .subtitle {
+      font-size: 0.95rem;
+      color: #64748b;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 620px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+    .card h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    table th,
+    table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    table th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+    }
+    table tr:last-child td {
+      border-bottom: none;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    label {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #334155;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 0.98rem;
+      color: #0f172a;
+      background-color: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #0d9488;
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 11px 18px;
+      background-color: #0d9488;
+      color: #ffffff;
+      font-size: 0.98rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    button[type="submit"]:hover {
+      background-color: #0f766e;
+    }
+    .result-wrap {
+      margin-top: 8px;
+    }
+    #hasil {
+      border: 4px solid #0d9488;
+      background-color: #e6fffa;
+      font-weight: bold;
+      color: #0f172a;
+      border-radius: 8px;
+      padding: 18px 20px;
+      text-align: center;
+      font-size: 1.35rem;
+      line-height: 1.35;
+    }
+    #hasil .sub {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: normal;
+      color: #475569;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>Kalkulator Zakat Penghasilan Sederhana</h1>
+      <p class="subtitle">Cek kewajiban zakat dari gaji bulanan</p>
+    </header>
+
+    <div class="grid">
+      <!-- TBN-1 / TBN-2 / TBN-3 : Tabel Syarat Nisab -->
+      <section class="card" aria-labelledby="judul-nisab">
+        <h2 id="judul-nisab">Syarat Nisab</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Jenis Harta</th>
+              <th scope="col">Nisab</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Emas</td>
+              <td>85 gram</td>
+            </tr>
+            <tr>
+              <td>Perak</td>
+              <td>595 gram</td>
+            </tr>
+            <tr>
+              <td>Penghasilan</td>
+              <td>Setara 85 g emas</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">Acuan sederhana: gaji ≥ Rp 7.000.000/bulan dianggap mencapai nisab.</p>
+      </section>
+
+      <!-- FRM-1 / FRM-2 / FRM-3 : Form Hitung Zakat -->
+      <section class="card" aria-labelledby="judul-hitung">
+        <h2 id="judul-hitung">Hitung Zakat</h2>
+        <form id="form-zakat" action="#" method="get">
+          <label for="gaji">Gaji Bulanan (Rp)</label>
+          <input
+            type="text"
+            id="gaji"
+            name="gaji"
+            inputmode="numeric"
+            placeholder="10.000.000"
+            value="10.000.000"
+            autocomplete="off"
+          >
+          <button type="submit">Hitung</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- HSL-3 / HSL-4 : Kotak Hasil Hitung -->
+    <section class="result-wrap" aria-live="polite">
+      <div id="hasil" role="status">
+        Rp 250.000
+        <span class="sub">Zakat 2,5% per bulan</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById('form-zakat');
+      var input = document.getElementById('gaji');
+      var hasil = document.getElementById('hasil');
+
+      var AMBANG_NISAB = 7000000;
+      var KADAR = 0.025;
+
+      function parseRupiah(str) {
+        if (!str) return NaN;
+        var digits = String(str).replace(/[^0-9]/g, '');
+        if (digits === '') return NaN;
+        return parseInt(digits, 10);
+      }
+
+      function formatRupiah(n) {
+        return 'Rp ' + n.toLocaleString('id-ID');
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var gaji = parseRupiah(input.value);
+
+        if (isNaN(gaji)) {
+          hasil.innerHTML = 'Masukkan nominal gaji yang valid.<span class="sub">Contoh: 10.000.000</span>';
+          return;
+        }
+
+        // HSL-1 : Skenario B — belum wajib
+        if (gaji < AMBANG_NISAB) {
+          alert('Anda belum wajib zakat');
+          return;
+        }
+
+        // HSL-2 : Skenario A — wajib, 2,5% x gaji
+        var zakat = Math.round(gaji * KADAR);
+        hasil.innerHTML =
+          formatRupiah(zakat) +
+          '<span class="sub">Zakat 2,5% per bulan</span>';
+      });
+    })();
+  </script>
+</body>
+</html>
